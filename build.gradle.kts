@@ -25,6 +25,14 @@ dependencies {
 	testImplementation("org.springframework.boot:spring-boot-starter-test")
 }
 
+val oasPackage = "com.sillycat"
+val oasGenOutputDir = project.layout.buildDirectory.dir("generated-oas")
+
+sourceSets {
+	val main by getting
+	main.java.srcDir("${oasGenOutputDir.get()}/src/main/kotlin")
+}
+
 tasks.withType<KotlinCompile> {
 	kotlinOptions {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
