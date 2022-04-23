@@ -16,6 +16,11 @@ make app-build
 make app-run
 ```
 
+```shell
+export $(cat .env | xargs)
+```
+
+
 ### clean the none docker image
 ```shell
 docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
