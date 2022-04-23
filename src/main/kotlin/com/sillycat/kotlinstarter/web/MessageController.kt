@@ -2,12 +2,10 @@ package com.sillycat.kotlinstarter.web
 
 import com.sillycat.kotlinstarter.model.Message
 import com.sillycat.kotlinstarter.service.MessageService
-import org.springframework.web.bind.annotation.GetMapping
-import org.springframework.web.bind.annotation.PostMapping
-import org.springframework.web.bind.annotation.RequestBody
-import org.springframework.web.bind.annotation.RestController
+import org.springframework.web.bind.annotation.*
 
 @RestController
+@RequestMapping("/messages")
 class MessageController(val service: MessageService) {
 
     @GetMapping
