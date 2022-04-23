@@ -10,6 +10,12 @@ curl -X POST --location "http://localhost:8001" -H "Content-Type: application/js
 curl -X GET --location "http://localhost:8001"
 ```
 
+### how to build on local
+```
+make app-build
+make app-run
+```
+
 ### clean the none docker image
 ```shell
 docker rmi $(docker images | grep "<none>" | awk "{print \$3}")
