@@ -1,1 +1,1 @@
-rootProject.name = "kotlinstarter"
+rootProject.name = "sillycat-kotlin-starter"
