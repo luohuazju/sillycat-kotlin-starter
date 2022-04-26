@@ -7,6 +7,6 @@ WORKDIR /app/kotlinstarter
 RUN gradle build
 
 FROM gcr.io/distroless/java11-debian11
-COPY --from=build /app/kotlinstarter/build/libs/kotlinstarter-0.0.1-SNAPSHOT.jar /app/kotlinstarter.jar
+COPY --from=build /app/kotlinstarter/build/libs/sillycat-kotlin-starter-0.0.1-SNAPSHOT.jar /app/kotlinstarter.jar
 WORKDIR /app
 ENTRYPOINT ["java", "-Djava.net.preferIPv4Stack=true", "-Dspring.profiles.active=${RUN_ENV:dev}", "-XX:MaxMetaspaceSize=256M", "-jar",  "./kotlinstarter.jar" ]
