@@ -12,7 +12,7 @@ app-build:
 app-run:
 	java -Djava.net.preferIPv4Stack=true \
 	 -Dspring.profiles.active=dev \
-	 -jar ./build/libs/kotlinstarter-0.0.1-SNAPSHOT.jar
+	 -jar ./build/libs/sillycat-kotlin-starter-0.0.1-SNAPSHOT.jar
 
 run:
 	docker run -d -p 8001:8001 -v /etc/hosts:/etc/hosts --name $(NAME) $(NAME):$(TAG)

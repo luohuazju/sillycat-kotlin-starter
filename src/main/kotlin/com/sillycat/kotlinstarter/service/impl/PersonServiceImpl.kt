@@ -1,7 +1,8 @@
-package com.sillycat.kotlinstarter.service
+package com.sillycat.kotlinstarter.service.impl
 
 import com.sillycat.kotlinstarter.dao.PersonNeo4jRepository
 import com.sillycat.kotlinstarter.model.Person
+import com.sillycat.kotlinstarter.service.PersonService
 import org.springframework.stereotype.Service
 
 @Service

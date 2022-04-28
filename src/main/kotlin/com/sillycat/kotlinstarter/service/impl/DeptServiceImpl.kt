@@ -1,12 +1,9 @@
-package com.sillycat.kotlinstarter.service
+package com.sillycat.kotlinstarter.service.impl
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
 import com.sillycat.kotlinstarter.dao.DeptNeo4jRepository
 import com.sillycat.kotlinstarter.model.Dept
-import com.sillycat.kotlinstarter.model.Person
-import org.neo4j.driver.internal.shaded.reactor.core.publisher.Flux
+import com.sillycat.kotlinstarter.service.DeptService
 import org.springframework.stereotype.Service
-import org.yaml.snakeyaml.events.Event
 
 
 @Service
