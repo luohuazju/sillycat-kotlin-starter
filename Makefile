@@ -18,7 +18,18 @@ run:
 	docker run -d -p 8001:8001 -v /etc/hosts:/etc/hosts --name $(NAME) $(NAME):$(TAG)
 
 run-elasticsearch:
-	docker run -d --name elasticsearch-single -p 9200:9200 -e "discovery.type=single-node" elasticsearch:7.17.3
+	docker run -d --name elasticsearch \
+	-p 9200:9200 -p 9300:9300 \
+	-e "discovery.type=single-node" \
+	-e ES_JAVA_OPTS="-Xms64m -Xmx512m" \
+	elasticsearch:7.17.3
+
+run-kibana:
+	docker run -d --name kibana \
+	--link elasticsearch:elasticsearch \
+	-e ELASTICSEARCH_HOST="http://elasticsearch:9200" \
+	-p 5601:5601 \
+	kibana:7.17.3
 
 run-prod:
 	docker run -d -p 8001:9000 --env RUN_ENV=prod --name $(NAME) $(NAME):$(TAG)
@@ -28,6 +39,10 @@ clean:
 	docker rm $(NAME)
 
 clean-elasticsearch:
-	docker stop elasticsearch-single
-	docker rm elasticsearch-single
+	docker stop elasticsearch
+	docker rm elasticsearch
+
+clean-kibana:
+	docker stop kibana
+	docker rm kibana
 
