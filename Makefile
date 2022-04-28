@@ -31,6 +31,12 @@ run-kibana:
 	-p 5601:5601 \
 	kibana:7.17.3
 
+run-neo4j:
+	docker run -d --name neo4j \
+	-p 7474:7474 -p 7687:7687 \
+	-e NEO4J_AUTH=neo4j/neo4jpassword \
+	neo4j:3.5.32
+
 run-prod:
 	docker run -d -p 8001:9000 --env RUN_ENV=prod --name $(NAME) $(NAME):$(TAG)
 
@@ -45,4 +51,8 @@ clean-elasticsearch:
 clean-kibana:
 	docker stop kibana
 	docker rm kibana
+
+clean-neo4j:
+	docker stop neo4j
+	docker rm neo4j
 
