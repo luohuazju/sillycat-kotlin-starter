@@ -1,0 +1,218 @@
+version: '3.7'
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    container_name: elasticsearch1
+    environment:
+      - node.name=elasticsearch1
+      - cluster.name=docker-cluster
+      - cluster.initial_master_nodes=elasticsearch1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512M -Xmx512M"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    # privileged: true
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '1'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+    volumes:
+      # - "./data/logs:/var/log"
+      # - "./data/loc_esdata1:/usr/share/elasticsearch/data"
+      - type: volume
+        source: logs
+        target: /var/log
+      - type: volume
+        source: loc_esdata1
+        target: /usr/share/elasticsearch/data
+    networks:
+      - elastic
+      - ingress
+    ports:
+      - 9200:9200
+      - 9300:9300
+
+  elasticsearch2:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    container_name: elasticsearch2
+    environment:
+      - node.name=elasticsearch2
+      - cluster.name=docker-cluster
+      - cluster.initial_master_nodes=elasticsearch1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512M -Xmx512M"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    # privileged: true
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '1'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+    volumes:
+      # - "./data/logs:/var/log"
+      # - "./data/loc_esdata2:/usr/share/elasticsearch/data"      
+      - type: volume
+        source: logs
+        target: /var/log
+      - type: volume
+        source: loc_esdata2
+        target: /usr/share/elasticsearch/data
+    networks:
+      - elastic
+      - ingress
+    ports:
+      - 9201:9200
+
+  elasticsearch3:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.0.1
+    container_name: elasticsearch3
+    environment:
+      - node.name=elasticsearch3
+      - cluster.name=docker-cluster
+      - cluster.initial_master_nodes=elasticsearch1
+      - bootstrap.memory_lock=true
+      - "ES_JAVA_OPTS=-Xms512M -Xmx512M"
+      - "discovery.zen.ping.unicast.hosts=elasticsearch1"
+      - http.cors.enabled=true
+      - http.cors.allow-origin=*
+      - network.host=_eth0_
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    # privileged: true
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '1'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 5s
+        max_attempts: 3
+        window: 10s
+    volumes:
+      # - "./data/logs:/var/log"
+      # - "./data/loc_esdata3:/usr/share/elasticsearch/data"      
+      - type: volume
+        source: logs
+        target: /var/log
+      - type: volume
+        source: loc_esdata3
+        target: /usr/share/elasticsearch/data
+    networks:
+      - elastic
+      - ingress
+    ports:
+      - 9202:9200
+
+  kibana:
+    image: docker.elastic.co/kibana/kibana:7.0.1
+    container_name: kibana
+    environment:
+      SERVER_NAME: localhost
+      ELASTICSEARCH_URL: http://elasticsearch1:9200/
+    ports:
+      - 5601:5601
+    volumes:
+      - type: volume
+        source: logs
+        target: /var/log
+    ulimits:
+      nproc: 65535
+      memlock:
+        soft: -1
+        hard: -1
+    cap_add:
+      - ALL
+    deploy:
+      replicas: 1
+      update_config:
+        parallelism: 1
+        delay: 10s
+      resources:
+        limits:
+          cpus: '1'
+          memory: 512M
+        reservations:
+          cpus: '1'
+          memory: 512M
+      restart_policy:
+        condition: on-failure
+        delay: 30s
+        max_attempts: 3
+        window: 120s
+    networks:
+      - elastic
+      - ingress
+      
+  headPlugin:
+    image: 'mobz/elasticsearch-head:5'
+    container_name: head
+    ports:
+      - '9100:9100'
+    networks:
+      - elastic
+
+volumes:
+  loc_esdata1:
+  loc_esdata2:
+  loc_esdata3:
+  logs:
+
+networks:
+  elastic:
+  ingress:
