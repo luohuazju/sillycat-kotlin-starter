@@ -37,6 +37,11 @@ run-neo4j:
 	-e NEO4J_AUTH=neo4j/neo4jpassword \
 	neo4j:3.5.32
 
+run-redis:
+	docker run -d --name redis \
+	-p 6379:6379 \
+	redis:7.0.0-bullseye
+
 run-prod:
 	docker run -d -p 8001:9000 --env RUN_ENV=prod --name $(NAME) $(NAME):$(TAG)
 
@@ -55,4 +60,8 @@ clean-kibana:
 clean-neo4j:
 	docker stop neo4j
 	docker rm neo4j
+
+clean-redis:
+	docker stop redis
+	docker rm redis
 
