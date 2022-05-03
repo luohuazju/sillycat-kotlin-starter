@@ -22,6 +22,7 @@ dependencies {
 	implementation("org.springframework.boot:spring-boot-starter-data-neo4j")
 	implementation("org.springframework.data:spring-data-elasticsearch")
 	implementation("com.fasterxml.jackson.module:jackson-module-kotlin")
+	implementation("org.redisson:redisson:3.17.1")
 	implementation("org.jetbrains.kotlin:kotlin-reflect")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib")
 	implementation("org.jetbrains.kotlin:kotlin-stdlib-jdk8")
