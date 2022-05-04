@@ -10,18 +10,11 @@ import java.util.concurrent.TimeUnit
 
 @RestController
 @RequestMapping("/persons")
-class PersonController(val personService: PersonService, val redissonClient: RedissonClient) {
+class PersonController(val personService: PersonService) {
 
     @PostMapping
     fun post(@RequestBody person: Person) {
-        val lock: RLock = redissonClient.getLock("LOCK" + person.id)
-        if(lock.tryLock(100, 10, TimeUnit.SECONDS)) {
-            try {
-                personService.savePerson(person)
-            } finally {
-                lock.unlock()
-            }
-        }
+        personService.savePerson(person)
     }
 
 }
