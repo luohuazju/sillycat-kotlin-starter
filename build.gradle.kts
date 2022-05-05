@@ -47,6 +47,7 @@ val oasGenOutputDir = project.layout.buildDirectory.dir("generated-oas")
 sourceSets {
 	val main by getting
 	main.java.srcDir("${oasGenOutputDir.get()}/src/main/kotlin")
+	main.resources.srcDir("${oasGenOutputDir.get()}/src/main/resources")
 }
 
 tasks.withType<KotlinCompile> {

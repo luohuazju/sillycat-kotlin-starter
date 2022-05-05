@@ -16,9 +16,10 @@ app-run:
 
 run:
 	docker run -d \
-	-p 8001:8001 -v /etc/hosts:/etc/hosts \
+	-p 8001:8001 \
 	--link elasticsearch:elasticsearch \
 	--link neo4j:neo4j \
+	--link redis:redis \
 	-e "NEO4J_PASSWORD=neo4jpassword" \
     -e "ELASTIC_HOST=elasticsearch" \
     -e "ELASTIC_PORT=9200" \
