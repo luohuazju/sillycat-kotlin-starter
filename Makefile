@@ -15,7 +15,16 @@ app-run:
 	 -jar ./build/libs/sillycat-kotlin-starter-0.0.1-SNAPSHOT.jar
 
 run:
-	docker run -d -p 8001:8001 -v /etc/hosts:/etc/hosts --name $(NAME) $(NAME):$(TAG)
+	docker run -d \
+	-p 8001:8001 -v /etc/hosts:/etc/hosts \
+	--link elasticsearch:elasticsearch \
+	--link neo4j:neo4j \
+	-e "NEO4J_PASSWORD=neo4jpassword" \
+    -e "ELASTIC_HOST=elasticsearch" \
+    -e "ELASTIC_PORT=9200" \
+    -e "ELASTIC_USERNAME=carl" \
+    -e "ELASTIC_PASSWORD=password" \
+	--name $(NAME) $(NAME):$(TAG)
 
 run-elasticsearch:
 	docker run -d --name elasticsearch \
