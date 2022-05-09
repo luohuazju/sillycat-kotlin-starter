@@ -17,8 +17,8 @@ class CustomerController(val customerService: CustomerService, val redissonClien
         return customerService.loadAllCustomers()
     }
 
-    @PostMapping
-    fun post(@RequestBody customer: Customer) {
+    @PostMapping("/lock")
+    fun postWithLock(@RequestBody customer: Customer) {
         val lock: RLock = redissonClient.getLock("LOCK" + customer.id)
         if(lock.tryLock(100, 10, TimeUnit.SECONDS)) {
             try {
@@ -27,5 +27,10 @@ class CustomerController(val customerService: CustomerService, val redissonClien
                 lock.unlock()
             }
         }
+    }
+
+    @PostMapping("/free")
+    fun postWithoutLock(@RequestBody customer: Customer) {
+        customerService.createCustomer(customer)
     }
 }

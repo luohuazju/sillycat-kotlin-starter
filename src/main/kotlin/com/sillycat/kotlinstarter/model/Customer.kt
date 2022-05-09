@@ -20,5 +20,5 @@ data class Customer(
     var status: String? = STATUS_ACTIVE,
 
     @JsonProperty("tags")
-    val tags: Set<String>,
+    val tags: Set<String>?,
 )
