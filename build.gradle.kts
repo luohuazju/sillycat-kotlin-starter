@@ -26,6 +26,7 @@ dependencies {
 		exclude("redis.clients:jedis")
 		exclude("io.lettuce:lettuce-core")
 	}
+	implementation("com.google.guava:guava:31.1-jre")
 	implementation("org.redisson:redisson-spring-boot-starter:3.17.1")
 	implementation("org.redisson:redisson:3.17.1")
 	implementation("org.redisson:redisson-spring-data-26:3.17.1")
