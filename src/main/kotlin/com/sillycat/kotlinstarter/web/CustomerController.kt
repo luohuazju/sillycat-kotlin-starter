@@ -38,7 +38,7 @@ class CustomerController(val customerService: CustomerService, val redissonClien
         }
     }
 
-    @PostMapping("/concurrentLock")
+    @PostMapping("/concurrentlock")
     fun postWithConcurrentLock(@RequestBody customer: Customer) {
         val key = "LOCK" + customer.id
         val concurrentLock: Lock = concurrentLocks.computeIfAbsent(key) { _ -> ReentrantLock() }
