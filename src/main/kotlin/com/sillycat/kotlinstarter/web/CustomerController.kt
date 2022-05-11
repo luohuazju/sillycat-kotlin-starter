@@ -46,7 +46,7 @@ class CustomerController(val customerService: CustomerService, val redissonClien
             try {
                 customerService.createCustomer(customer)
             }finally {
-                jdkLock.unlock()
+                concurrentLock.unlock()
             }
         }
     }
