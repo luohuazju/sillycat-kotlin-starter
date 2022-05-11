@@ -4,6 +4,7 @@ import com.google.common.util.concurrent.Striped
 import com.sillycat.kotlinstarter.model.Customer
 import com.sillycat.kotlinstarter.model.Message
 import com.sillycat.kotlinstarter.service.CustomerService
+import com.sillycat.kotlinstarter.service.LockService
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
 import org.springframework.cache.Cache
@@ -16,7 +17,7 @@ import java.util.concurrent.locks.Lock
 
 @RestController
 @RequestMapping("/customers")
-class CustomerController(val customerService: CustomerService, val cacheManager: CacheManager) {
+class CustomerController(val customerService: CustomerService, val lockService: LockService) {
 
     private val jdkLock: Lock = ReentrantLock()
     private val concurrentLocks: ConcurrentHashMap<String, Lock> = ConcurrentHashMap()
@@ -29,32 +30,13 @@ class CustomerController(val customerService: CustomerService, val cacheManager:
 
     @PostMapping("/cachelock")
     fun postWithCacheLock(@RequestBody customer: Customer) {
-        val cache: Cache? = cacheManager.getCache("DEFAULT")
-        if (cache != null) {
-            val key = "LOCK" + customer.id
-            var total = 0
-            do {
-                val now = System.currentTimeMillis()
-                val newTimestamp = now + 6000
-                val oldTimestamp = cache.putIfAbsent(key, newTimestamp)
-                if (oldTimestamp == null ||
-                    ( now > oldTimestamp.get().toString().toLong() && cache.putIfAbsent(
-                        key,
-                        newTimestamp
-                    ) != null)
-                ) {
-                    //get lock, go with logic
-                    try {
-                        customerService.createCustomer(customer)
-                    } finally {
-                        cache.evict(key)
-                        break
-                    }
-                } else {
-                    TimeUnit.MILLISECONDS.sleep(500)
-                    total += 500
-                }
-            } while (total < 5000)
+        val key = "LOCK" + customer.id
+        if(lockService.tryLock("DEFAULT", key, 10000, 10000)){
+            try {
+                customerService.createCustomer(customer)
+            }finally {
+                lockService.unLock(key)
+            }
         }
     }
 
