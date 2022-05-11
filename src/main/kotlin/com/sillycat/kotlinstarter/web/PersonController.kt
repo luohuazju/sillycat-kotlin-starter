@@ -3,8 +3,6 @@ package com.sillycat.kotlinstarter.web
 import com.sillycat.kotlinstarter.model.Message
 import com.sillycat.kotlinstarter.model.Person
 import com.sillycat.kotlinstarter.service.PersonService
-import org.redisson.api.RLock
-import org.redisson.api.RedissonClient
 import org.springframework.web.bind.annotation.*
 import java.util.concurrent.TimeUnit
 

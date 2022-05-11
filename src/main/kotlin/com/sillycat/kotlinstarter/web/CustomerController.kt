@@ -4,10 +4,10 @@ import com.google.common.util.concurrent.Striped
 import com.sillycat.kotlinstarter.model.Customer
 import com.sillycat.kotlinstarter.model.Message
 import com.sillycat.kotlinstarter.service.CustomerService
-import org.redisson.api.RLock
-import org.redisson.api.RedissonClient
 import org.slf4j.Logger
 import org.slf4j.LoggerFactory
+import org.springframework.cache.Cache
+import org.springframework.cache.CacheManager
 import org.springframework.web.bind.annotation.*
 import java.util.concurrent.ConcurrentHashMap
 import java.util.concurrent.TimeUnit
@@ -16,7 +16,7 @@ import java.util.concurrent.locks.Lock
 
 @RestController
 @RequestMapping("/customers")
-class CustomerController(val customerService: CustomerService, val redissonClient: RedissonClient) {
+class CustomerController(val customerService: CustomerService, val cacheManager: CacheManager) {
 
     private val jdkLock: Lock = ReentrantLock()
     private val concurrentLocks: ConcurrentHashMap<String, Lock> = ConcurrentHashMap()
@@ -25,6 +25,37 @@ class CustomerController(val customerService: CustomerService, val redissonClien
     @GetMapping
     fun index(): Set<Customer> {
         return customerService.loadAllCustomers()
+    }
+
+    @PostMapping("/cachelock")
+    fun postWithCacheLock(@RequestBody customer: Customer) {
+        val cache: Cache? = cacheManager.getCache("DEFAULT")
+        if (cache != null) {
+            val key = "LOCK" + customer.id
+            var total = 0
+            do {
+                val now = System.currentTimeMillis()
+                val newTimestamp = now + 6000
+                val oldTimestamp = cache.putIfAbsent(key, newTimestamp)
+                if (oldTimestamp == null ||
+                    ( now > oldTimestamp.get().toString().toLong() && cache.putIfAbsent(
+                        key,
+                        newTimestamp
+                    ) != null)
+                ) {
+                    //get lock, go with logic
+                    try {
+                        customerService.createCustomer(customer)
+                    } finally {
+                        cache.evict(key)
+                        break
+                    }
+                } else {
+                    TimeUnit.MILLISECONDS.sleep(500)
+                    total += 500
+                }
+            } while (total < 5000)
+        }
     }
 
     @PostMapping("/jdklock")
@@ -60,19 +91,6 @@ class CustomerController(val customerService: CustomerService, val redissonClien
                 customerService.createCustomer(customer)
             } finally {
                 guavaLock.unlock()
-            }
-        }
-    }
-
-
-    @PostMapping("/redislock")
-    fun postWithRedisLock(@RequestBody customer: Customer) {
-        val redisLock: RLock = redissonClient.getLock("LOCK" + customer.id)
-        if(redisLock.tryLock(100, 10, TimeUnit.SECONDS)) {
-            try {
-                customerService.createCustomer(customer)
-            } finally {
-                redisLock.unlock()
             }
         }
     }
