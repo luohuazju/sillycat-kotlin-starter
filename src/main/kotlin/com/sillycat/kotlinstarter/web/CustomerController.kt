@@ -35,7 +35,7 @@ class CustomerController(val customerService: CustomerService, val lockService: 
             try {
                 customerService.createCustomer(customer)
             }finally {
-                lockService.unLock(key)
+                lockService.unLock("DEFAULT",key)
             }
         }
     }
