@@ -37,7 +37,14 @@ dependencies {
 	implementation("io.github.microutils:kotlin-logging-jvm:2.1.21")
 	implementation("org.springdoc:springdoc-openapi-kotlin:1.6.7")
 	runtimeOnly("com.h2database:h2")
-	testImplementation("org.springframework.boot:spring-boot-starter-test")
+
+	testImplementation("org.springframework.boot:spring-boot-starter-test") {
+		exclude(module = "mockito-core")
+	}
+	testImplementation("org.junit.jupiter:junit-jupiter-api")
+	testRuntimeOnly("org.junit.jupiter:junit-jupiter-engine")
+	testImplementation("io.mockk:mockk:1.12.3")
+	testImplementation("com.ninja-squad:springmockk:3.1.1")
 }
 
 val oasPackage = "com.sillycat"
@@ -54,5 +61,9 @@ tasks.withType<KotlinCompile> {
 		freeCompilerArgs = listOf("-Xjsr305=strict")
 		jvmTarget = "1.8"
 	}
+}
+
+tasks.withType<Test> {
+	useJUnitPlatform()
 }
 
