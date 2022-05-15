@@ -20,6 +20,11 @@ make app-run
 export $(cat .env | xargs)
 ```
 
+### Run the unit test
+```shell
+gradle clean test --info
+```
+
 
 ### clean the none docker image
 ```shell
