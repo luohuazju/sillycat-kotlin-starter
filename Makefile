@@ -51,6 +51,12 @@ run-redis:
 	-p 6379:6379 \
 	redis:7.0.0-bullseye
 
+run-cassandra:
+	docker run -d --name cassandra \
+	--net=host \
+	-e CASSANDRA_RPC_ADDRESS=0.0.0.0 \
+	cassandra:4.0.4
+
 run-prod:
 	docker run -d -p 8001:9000 --env RUN_ENV=prod --name $(NAME) $(NAME):$(TAG)
 
@@ -74,3 +80,6 @@ clean-redis:
 	docker stop redis
 	docker rm redis
 
+clean-cassandra:
+	docker stop cassandra
+	docker rm cassandra
