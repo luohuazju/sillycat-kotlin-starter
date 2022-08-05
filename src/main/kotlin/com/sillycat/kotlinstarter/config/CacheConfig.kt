@@ -1,40 +1,29 @@
 package com.sillycat.kotlinstarter.config
 
-import com.fasterxml.jackson.annotation.JsonTypeInfo
-import com.fasterxml.jackson.databind.ObjectMapper
-import com.fasterxml.jackson.databind.jsontype.BasicPolymorphicTypeValidator
-import com.fasterxml.jackson.datatype.jsr310.JavaTimeModule
-import com.fasterxml.jackson.module.kotlin.KotlinModule
+import java.time.Duration
 import org.springframework.cache.CacheManager
-import org.springframework.cache.annotation.CachingConfigurerSupport
 import org.springframework.cache.annotation.EnableCaching
-import org.springframework.cache.concurrent.ConcurrentMapCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
 import org.springframework.data.redis.cache.RedisCacheConfiguration
-import org.springframework.data.redis.serializer.GenericJackson2JsonRedisSerializer
-import org.springframework.data.redis.serializer.RedisSerializationContext
-import org.springframework.data.redis.serializer.StringRedisSerializer
-import javax.annotation.Resource
+import org.springframework.data.redis.cache.RedisCacheManager
+import org.springframework.data.redis.cache.RedisCacheWriter
+import org.springframework.data.redis.connection.RedisConnectionFactory
+import org.springframework.data.redis.connection.jedis.JedisConnectionFactory
+import org.springframework.data.redis.core.RedisTemplate
+
 
 @Configuration
 @EnableCaching
 class CacheConfig() {
 
     @Bean
-    fun redisCacheConfiguration(): RedisCacheConfiguration {
-        val om = ObjectMapper()
-            .registerModule(KotlinModule())
-            .registerModule(JavaTimeModule())
-            .activateDefaultTyping(
-                BasicPolymorphicTypeValidator.builder()
-                .allowIfBaseType(Any::class.java)
-                .build(), ObjectMapper.DefaultTyping.EVERYTHING)
-
-        val serializer = GenericJackson2JsonRedisSerializer(om)
-
-        return RedisCacheConfiguration
-            .defaultCacheConfig()
-            .serializeValuesWith(RedisSerializationContext.SerializationPair.fromSerializer(serializer))
+    fun  cacheManager(redisConnectionFactory: RedisConnectionFactory?): CacheManager? {
+        val redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory!!)
+        val defaultCacheConfig =
+            RedisCacheConfiguration.defaultCacheConfig()
+        val redisCacheConfigurationMap: MutableMap<String, RedisCacheConfiguration> = HashMap()
+        return RedisCacheManager(redisCacheWriter, defaultCacheConfig, redisCacheConfigurationMap)
     }
+
 }
