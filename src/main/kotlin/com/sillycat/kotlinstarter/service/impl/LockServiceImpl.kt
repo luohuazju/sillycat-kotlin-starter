@@ -6,11 +6,11 @@ import org.springframework.stereotype.Service
 import java.util.concurrent.TimeUnit
 
 @Service(value="lockService")
-class LockServiceImpl(private val cacheManager: CacheManager): LockService  {
+class LockServiceImpl(private val alternateCacheManager: CacheManager): LockService  {
 
     override fun tryLock(name: String?, key: String, timeout: Long, ttl: Long): Boolean {
         val cacheName = name ?: "DEFAULT"
-        val cache = cacheManager.getCache(cacheName)
+        val cache = alternateCacheManager.getCache(cacheName)
         if (cache != null) {
             var total : Long = 0
             do {
@@ -36,7 +36,7 @@ class LockServiceImpl(private val cacheManager: CacheManager): LockService  {
 
     override fun unLock(name: String?, key: String) {
         val cacheName = name ?: "DEFAULT"
-        cacheManager.getCache(cacheName)?.evict(key)
+        alternateCacheManager.getCache(cacheName)?.evict(key)
     }
 
 

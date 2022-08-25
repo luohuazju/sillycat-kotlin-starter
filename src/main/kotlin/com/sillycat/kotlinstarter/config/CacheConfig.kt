@@ -3,8 +3,10 @@ package com.sillycat.kotlinstarter.config
 import java.time.Duration
 import org.springframework.cache.CacheManager
 import org.springframework.cache.annotation.EnableCaching
+import org.springframework.cache.concurrent.ConcurrentMapCacheManager
 import org.springframework.context.annotation.Bean
 import org.springframework.context.annotation.Configuration
+import org.springframework.context.annotation.Primary
 import org.springframework.data.redis.cache.RedisCacheConfiguration
 import org.springframework.data.redis.cache.RedisCacheManager
 import org.springframework.data.redis.cache.RedisCacheWriter
@@ -17,8 +19,13 @@ import org.springframework.data.redis.core.RedisTemplate
 @EnableCaching
 class CacheConfig() {
 
+    @Primary
+    fun cacheManager(): CacheManager? {
+        return ConcurrentMapCacheManager()
+    }
+
     @Bean
-    fun  cacheManager(redisConnectionFactory: RedisConnectionFactory?): CacheManager? {
+    fun  alternateCacheManager(redisConnectionFactory: RedisConnectionFactory?): CacheManager? {
         val redisCacheWriter = RedisCacheWriter.nonLockingRedisCacheWriter(redisConnectionFactory!!)
         val defaultCacheConfig =
             RedisCacheConfiguration.defaultCacheConfig()
